@@ -1,0 +1,26 @@
+[
+    {
+        "kod": "KS76-104K",
+        "quantity": 4.0,
+        "price": 0,
+        "sum": 0.0
+    },
+    {
+        "kod": "KS76-105K",
+        "quantity": 4.0,
+        "price": 0,
+        "sum": 0.0
+    },
+    {
+        "kod": "KS76-118K",
+        "quantity": 3.0,
+        "price": 0,
+        "sum": 0.0
+    },
+    {
+        "kod": "KS76-126",
+        "quantity": 3.0,
+        "price": 2420.0,
+        "sum": 7260.0
+    }
+]

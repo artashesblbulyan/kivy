@@ -1,16 +1,10 @@
 import json
 import os
-
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.filechooser import FileChooserIconView
-from kivy.uix.togglebutton import ToggleButton
-
 os.environ['KIVY_GL_BACKEND'] = 'angle_sdl2'
 from kivy.uix.carousel import Carousel
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.modalview import ModalView
 from kivy.uix.slider import Slider
-from kivy.core.window import Window
 from kivy.uix.scrollview import ScrollView
 from kivy.app import App
 from kivy.uix.button import Button
@@ -22,28 +16,37 @@ from datetime import date
 from kivy.uix.widget import Widget
 from kivy.utils import platform
 from kivy.lang import Builder
-from kivy.uix.settings import SettingsWithSidebar
-import requests
-from pandas.io.json import json_normalize
-import pandas as pd
-from kivy.uix.floatlayout import FloatLayout
-from kivy.factory import Factory
-from kivy.properties import ObjectProperty
-from kivy.uix.popup import Popup
 from kivy.core.window import Window
 from PIL import Image
-Window.clearcolor = (98/225, 98/225 ,98/225, 1)
-# Window.size = (720, 1280)
+from plyer import vibrator, email,camera
 
 
+# first argument of createOneShot is the time in ms
+# second argument is the amplitude (range from 1 to 255), -1 is device standard amplitude
+
+
+Window.clearcolor = (98 / 225, 98 / 225, 98 / 225, 1)
 
 
 if platform == 'android':
     from android.storage import primary_external_storage_path
+    # from jnius import autoclass, cast
+    #
+    # PythonActivity = autoclass('org.kivy.android.PythonActivity')
+    # activity = PythonActivity.mActivity
+    # Context = autoclass('android.content.Context')
+    #
+    # vibrator_service = activity.getSystemService(Context.VIBRATOR_SERVICE)
+    # vibrator = cast("android.os.Vibrator", vibrator_service)
+    #
+    # vibration_effect = autoclass("android.os.VibrationEffect")
+    # vibrator.vibrate(vibration_effect.createOneShot(2000, 150))
+
     dir = primary_external_storage_path()
-    if not os.path.exists(os.path.join(dir, 'Download/'+str(date.today()) + '/')): os.makedirs( os.path.join(dir, 'Download/'+str(date.today()) + '/'))
+    if not os.path.exists(os.path.join(dir, 'Download/' + str(date.today()) + '/')): os.makedirs(
+        os.path.join(dir, 'Download/' + str(date.today()) + '/'))
     if not os.path.exists(os.path.join(dir, 'Download/pahest/')): os.makedirs(os.path.join(dir, 'Download/pahest/'))
-    download_dir_path = os.path.join(dir, 'Download/'+str(date.today()) + '/')
+    download_dir_path = os.path.join(dir, 'Download/' + str(date.today()) + '/')
     image_dir_path = os.path.join(dir, 'Download/pahest/')
     partners_dir_path = os.path.join(dir, 'Download/')
 
@@ -52,11 +55,23 @@ else:
     download_dir_path = os.getcwd() + '\\' + str(date.today()) + '\\'
     image_dir_path = 'img_1'
     partners_dir_path = ''
-print(download_dir_path)
 
 
 def add_one_product(instance):
     instance.k.text = str(float(instance.k.text) + 1)
+
+
+def send_mesage(instance):
+    with open(download_dir_path+'PartnerName2022-09-16.json', "r") as xt_js_file:
+        a = json.load(xt_js_file)
+    recipient = 'abc@gmail.com'
+    subject = 'Hi'
+    text = a
+    create_chooser = False
+    email.send(recipient=recipient, subject=subject, text=text,
+                    create_chooser=create_chooser)
+    # instance.k.text = str(float(instance.k.text) + 1)
+
 
 
 def reduce_one_product(instance):
@@ -70,9 +85,6 @@ class MyLayout(Widget):
     def selected(self, filename):
         try:
             self.ids.filechooser.path = download_dir_path
-            print(filename[0])
-            print(filename)
-            # a = self.ids.my_widget
             with open(filename[0], "r") as xt_js_file:
                 a = json.load(xt_js_file)
                 self.ids.my_image.text = json.dumps(a, indent=4, sort_keys=True)
@@ -83,10 +95,10 @@ class MyLayout(Widget):
 class CustomWidget(Widget):
 
     def reposition_widgets(self):
-
         pass
 
     on_size = reposition_widgets
+
 
 class BoxApp(App):
 
@@ -106,7 +118,7 @@ class BoxApp(App):
         modal = ModalView()
         carousel = Carousel(direction='right', loop=True)
         for filename in os.listdir(image_dir_path):
-            button = AsyncImage(source=image_dir_path + '/' + filename, allow_stretch=True, keep_ratio=True )
+            button = AsyncImage(source=image_dir_path + '/' + filename, allow_stretch=True, keep_ratio=True)
             img = GridLayout(cols=1, spacing=1)
             img.add_widget(button)
 
@@ -153,14 +165,13 @@ class BoxApp(App):
         modal.add_widget(carousel)
         modal.open()
 
-    def sumA(self,sumd):
-        print('aaaaaa',sumd)
+    def sumA(self, sumd):
+        print('aaaaaa', sumd)
         return str(sumd)
 
     def add_number(self, instance):
+        # vibrator.vibrate(time=4)
         self.filename = str(self.textinput.text + self.textinput_1.text + '.json')
-        
-        # if self.filename in os.listdir(download_dir_path):
         try:
             with open(download_dir_path + self.filename, "r") as xt_js_file:
                 a = json.load(xt_js_file)
@@ -180,7 +191,6 @@ class BoxApp(App):
             for j in a:
                 sum += j["sum"]
                 if instance.text == j['kod']:
-                    # j['kod'] = instance.text
                     j["quantity"] = float(instance.k.text)
                     j["sum"] = float(instance.k.text) * j["price"]
                     inx += 1
@@ -221,7 +231,7 @@ class BoxApp(App):
                     if a != []:
                         for h in a:
                             if j == h['kod']:
-                                print(j,h['kod'],h['quantity'])
+                                print(j, h['kod'], h['quantity'])
                                 self.bs[j].text = str(h['quantity'])
                                 break
                             else:
@@ -233,9 +243,6 @@ class BoxApp(App):
             with open(download_dir_path + self.filename, "a") as text_js_file:
                 text = []
                 json.dump(text, text_js_file, indent=4)
-            # with open(download_dir_path + "sum", "a") as sum_js_file:
-            #     data_sum ={}
-            #     json.dump(data_sum, sum_js_file, indent=4)
         return self.filename
 
     def save_partners_name(self, instance):
@@ -305,14 +312,7 @@ class BoxApp(App):
         return k
 
     def on_value_change(self, instance, value):
-        print(instance.d)
         instance.k.text = str(value)
-
-    # def convert_to_excel(self, instance):
-    #     for filename in os.listdir(download_dir_path):
-    #         if filename[:-5]+'.xlsx' not in os.listdir(download_dir_path):
-    #             df = pd.read_json(download_dir_path + filename, encoding='unicode_escape')
-    #             df.to_excel(download_dir_path + filename[:-5]+'.xlsx')
 
     def load(self, path):
         modal = ModalView(auto_dismiss=True, )
@@ -337,7 +337,8 @@ class BoxApp(App):
             with open(partners_dir_path + 'partners.txt', "r") as partner_js_file:
                 partnersList = partner_js_file.readlines()
                 for buttonPartners in partnersList:
-                    Part_list_button = Button(text=buttonPartners[:-1], on_press=self.partners_name_input,size_hint_y=None,
+                    Part_list_button = Button(text=buttonPartners[:-1], on_press=self.partners_name_input,
+                                              size_hint_y=None,
                                               height=40)
                     Part_list_button.bind(minimum_height=Part_list_button.setter)
                     Partners_list_Gl.add_widget(Part_list_button)
@@ -355,48 +356,30 @@ class BoxApp(App):
     def on_value_change(self, instance, value):
         instance.k.text = str(value)
 
-    def convert_to_excel(self, instance):
-        for filename in os.listdir(download_dir_path):
-            if filename[:-5]+'.xlsx' not in os.listdir(download_dir_path):
-                df = pd.read_json(download_dir_path + filename, encoding= 'unicode_escape')
-                df.to_excel(download_dir_path + filename[:-5]+'.xlsx')
-
     def load(self, path):
         modal = ModalView(auto_dismiss=True, )
-        # Partners_Save_Gl = GridLayout(cols=1, spacing=1,  size_hint_y=None)
-        # Partners_list_Gl = GridLayout(cols=1, spacing=1, size_hint_y=None, height=500)
-        # Partners_list_Gl.bind(minimum_height=Partners_list_Gl.setter('height'))
-        # self.name_Partners = TextInput(text='NamePartners', font_size=30)
-        # ok_Name_Partners = Button(text='Save Partners', on_press=self.save_partners_name)
-        # Partners_Save_Gl.add_widget(self.name_Partners)
-        # Partners_Save_Gl.add_widget(ok_Name_Partners)
-        # Partners_list_Gl.add_widget(Partners_Save_Gl)
         a = MyLayout()
-
-        # k = ScrollView(size_hint=(1, None), size=(Window.width, Window.height))
-        # k.add_widget(Partners_list_Gl)
-        # Partners_Save_Gl.add_widget(a)
         modal.size_hint = (.9, .9)
         modal.add_widget(a)
         modal.open()
         return a
 
     def build(self):
-        # content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
-
-        # FileChooserIconView()
-
         btn = Button(text='File', on_press=self.load,
                      font_size=35,
                      bold=True,
                      background_color=(0.0, 0.0, 0.0, 1.0),
+                     background_down="atlas://data/images/defaulttheme/button_pressed"
                      )
-        # btn.bind(on_release=self.load(fileChooser.path, fileChooser.selection))
+        message = Button(text='mess', on_press=send_mesage,
+                     font_size=35,
+                     bold=True,
+                     background_color=(0.0, 0.0, 0.0, 1.0),
+                     background_down="atlas://data/images/defaulttheme/button_pressed"
+                     )
         carousel = Carousel()
-        # self.settings_cls = SettingsWithSidebar
         gl = GridLayout(cols=1, spacing=1, size_hint_y=None)
         al = GridLayout(cols=1, spacing=2)
-        # gl.bind(minimum_height=gl.setter('height'))
         gltext = GridLayout(cols=5, spacing=1, size_hint_y=None, height=100)
         file = GridLayout(cols=2, spacing=1, size_hint_y=None, height=100)
         text_name = GridLayout(cols=1, spacing=2, size_hint_y=None, height=100)
@@ -404,111 +387,95 @@ class BoxApp(App):
                             font_size=35,
                             bold=True,
                             background_color=(0.0, 0.0, 0.0, 1.0),
+                            background_down="True",
                             border=(20, 20, 20, 20),
-
                             )
         self.sumLabel = Label(text='SUM', font_size=35,
                               color=(0.0, 0.0, 0.0, 1.0),
                               bold=True,
                               )
-        # to_excel = Button(text='ToExcel', on_press=self.convert_to_excel, font_size=20)
         partnerlistbut = Button(text='List', on_press=self.list_partners,
                                 font_size=35,
                                 bold=True,
-                                background_color=(0.0, 0.0, 0.0, 1.0),)
+                                background_color=(0.0, 0.0, 0.0, 1.0),
+                                background_down="True"
+                                )
         file.add_widget(partnerlistbut)
         gltext.add_widget(self.sumLabel)
         gltext.add_widget(text_name)
         text_name.add_widget(self.textinput)
         text_name.add_widget(self.textinput_1)
-        # file.add_widget(to_excel)
         gltext.add_widget(textbutton)
         gltext.add_widget(file)
         file.add_widget(btn)
-
-        # gl.add_widget(gltext)
+        file.add_widget(message)
         al.add_widget(gltext)
         glimg = GridLayout(cols=1, spacing=1, size_hint_y=None)
         glimg.bind(minimum_height=gl.setter('height'))
         gl.add_widget(glimg)
-
         self.bs = {}
-
         for filename in os.listdir(image_dir_path):
-
             button = AsyncImage(source=image_dir_path + '/' + filename, allow_stretch=True, keep_ratio=True,
-                           on_press=self.image_zoom)
-            # print(button.height)
-            # print(button.size)
+                                on_press=self.image_zoom)
             width, height = Image.open(image_dir_path + '/' + filename).size
             height = Window.width * height / width
-            print(Window.width,width, height)
-
             img = GridLayout(cols=1, spacing=1, size_hint_y=None, height=height)
             img.add_widget(button)
-
             bl = GridLayout(cols=6, spacing=1, size_hint_y=None, height=100)
             btpluss = GridLayout(cols=2, spacing=1, size_hint_y=None, height=100)
-
             self.button2 = TextInput(text='0', font_size=45, multiline=False)
-
             self.button1 = Slider(min=0, max=100, step=1,
                                   )
-
             self.button1.k = self.button2
             bl.add_widget(self.button1)
-
             self.button1.bind(value=self.on_value_change)
             self.bs[filename[:-4]] = self.button2
             bl.add_widget(self.button2)
             self.label = Button(text=filename[:-4], on_press=self.add_number,
                                 font_size=35,
                                 bold=True,
-                                background_color=(0.0, 0.0, 0.0, 1.0))
+                                background_color=(0.0, 0.0, 0.0, 1.0),
+                                background_down="True"
+                                )
             self.label.k = self.button2
             self.button1.d = self.label.text
-
-            rl = RelativeLayout(size_hint_y=None, height=height+100)
+            rl = RelativeLayout(size_hint_y=None, height=height + 100)
             button4 = Button(text='Zoom', on_press=self.image_zoom,
                              font_size=35,
                              bold=True,
                              background_color=(0.0, 0.0, 0.0, 1.0),
                              )
             button4.id = filename
-
             self.button5 = Button(text='+1', on_press=add_one_product,
                                   font_size=35,
                                   bold=True,
-                                  background_color=(0.0, 0.0, 0.0, 1.0))
+                                  background_color=(0.0, 0.0, 0.0, 1.0),
+                                  background_normal=""
+                                  )
             self.button5.instance = self.label
             self.button5.k = self.button2
             btpluss.add_widget(self.button5)
-
-            # self.settings = Button(text='setting', on_relase=App.open_settings, font_size=30)
             self.button6 = Button(text='-1', on_press=reduce_one_product,
                                   font_size=35,
                                   bold=True,
-                                  background_color=(0.0, 0.0, 0.0, 1.0))
+                                  background_color=(0.0, 0.0, 0.0, 1.0),
+                                  background_down="True"
+                                  )
             self.button6.instance = self.label
             self.button6.k = self.button2
-
             btpluss.add_widget(self.button6)
-
             bl.add_widget(btpluss)
             bl.add_widget(self.label)
 
             bl.add_widget(button4)
-            layout = GridLayout(cols=1, spacing=1, size_hint_y=None, height=height+100)
-            print(layout.width, layout.height)
+            layout = GridLayout(cols=1, spacing=1, size_hint_y=None, height=height + 100)
             layout.add_widget(img)
             layout.add_widget(bl)
             rl.add_widget(layout)
             glimg.add_widget(rl)
-
         root = ScrollView(size_hint_y=None, size=(Window.width, Window.height))
         root.add_widget(gl)
         al.add_widget(root)
-        # Filechooser()
         return al
 
 
